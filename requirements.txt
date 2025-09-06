@@ -1,0 +1,4 @@
+google-play-scraper==1.0.1
+pandas
+supabase
+requests
