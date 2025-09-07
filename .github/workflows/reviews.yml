@@ -2,14 +2,14 @@ name: Daily Zomato Reviews Pipeline
 
 on:
   schedule:
-    - cron: "0 5 * * *" # Every day at 5 AM UTC
+    - cron: "48 4 * * *" # Every day at 5 AM UTC
   workflow_dispatch:       # Manual trigger
 
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
