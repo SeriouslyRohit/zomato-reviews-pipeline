@@ -2,7 +2,7 @@ name: Daily Zomato Reviews Pipeline
 
 on:
   schedule:
-    - cron: "48 4 * * *" # Every day at 5 AM UTC
+    - cron: "0 1 * * *" # Every day at 3 AM CEST
   workflow_dispatch:       # Manual trigger
 
 jobs:
