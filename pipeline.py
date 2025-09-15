@@ -78,9 +78,12 @@ def upsert_reviews(df, table_name, conflict_column="review_id"):
     if df.empty:
         print(f"⚠️ No new reviews for {table_name}.")
         return
-    df["review_date"] = df["review_date"].astype(str)
+    # Always store dates in UTC
+    df["review_date"] = pd.to_datetime(df["review_date"], utc=True).astype(str)
+
     for row in df.to_dict(orient="records"):
         supabase.table(table_name).upsert(row, on_conflict=conflict_column).execute()
+
     print(f"✅ Uploaded {len(df)} new reviews into {table_name}")
 
 
@@ -90,11 +93,19 @@ def upsert_reviews(df, table_name, conflict_column="review_id"):
 def filter_new_reviews(df, table_name, date_col="review_date"):
     if df.empty:
         return df
+
     latest = supabase.table(table_name).select(date_col).order(date_col, desc=True).limit(1).execute()
+
     if latest.data:
-        last_date = pd.to_datetime(latest.data[0][date_col])
-        df[date_col] = pd.to_datetime(df[date_col])
+        # Force Supabase timestamp into UTC and tz-aware
+        last_date = pd.to_datetime(latest.data[0][date_col], utc=True)
+
+        # Normalize the dataframe column into UTC and tz-aware
+        df[date_col] = pd.to_datetime(df[date_col], utc=True)
+
+        # Keep only reviews newer than the last stored one
         df = df[df[date_col] > last_date]
+
     return df
 
 
